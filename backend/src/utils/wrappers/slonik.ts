@@ -10,7 +10,8 @@ export class Database implements IDatabase {
     constructor(connectionUrl: string | undefined) {
         if (connectionUrl) {
             this.pool = createPool(connectionUrl);
+        } else {
+            throw new Error("No database connection Url defined");
         }
-        throw new Error("No database connection Url defined");
     }
 }
