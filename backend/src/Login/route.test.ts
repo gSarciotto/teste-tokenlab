@@ -5,6 +5,7 @@ import { LoginDatabase } from "./database/LoginDatabase";
 import { UserNotFound } from "./database/errors";
 import { Jwt } from "../utils";
 import { Bcrypt } from "../utils/wrappers/bcrypt";
+import { addRouteSharedSchemas } from "../addRouteSharedSchemas";
 
 jest.mock("./database/LoginDatabase", () => {
     return {
@@ -31,6 +32,7 @@ describe("POST /login should", () => {
     };
     let hashedPassword: string;
     beforeAll(async () => {
+        addRouteSharedSchemas(server);
         server.route(createLoginRoute(mockLoginDatabase, bcrypt, jwt));
         hashedPassword = await bcrypt.hash(existingUserCredentials.password);
     });
@@ -102,5 +104,37 @@ describe("POST /login should", () => {
         expect(response.statusCode).toBe(404);
         const responseBody = response.json<{ message: string }>();
         expect(responseBody.message).toMatch("Invalid username or password");
+    });
+});
+
+describe("POST /login should return Bad Request (400) if", () => {
+    //these test are just to be sure that the validation scheme on the route is the same that is used on route POST /users
+    const server = fastify();
+    const mockLoginDatabase = new MockedLoginDatabase();
+    const bcrypt = new Bcrypt();
+    const secret = "a secret";
+    const jwt = new Jwt(secret);
+    beforeAll(() => {
+        addRouteSharedSchemas(server);
+        server.route(createLoginRoute(mockLoginDatabase, bcrypt, jwt));
+    });
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+    afterAll(async () => {
+        await server.close();
+    });
+    test("username in request body is too long", async () => {
+        const longUsernameCredentials: UserCredentials = {
+            username: "a".repeat(21),
+            password: "password"
+        };
+        const response = await server.inject({
+            ...methodAndRoute,
+            payload: longUsernameCredentials
+        });
+        expect(response.statusCode).toBe(400);
+        const responseBody = response.json<{ message: string }>();
+        expect(responseBody.message).toMatch(/username should NOT be longer/);
     });
 });

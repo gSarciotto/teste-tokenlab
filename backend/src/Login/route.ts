@@ -48,5 +48,8 @@ export const createLoginRoute = (
         }
         const token = await jwt.sign({ userId: storedUserPasswordAndId.id });
         await reply.status(201).send({ token });
+    },
+    schema: {
+        body: { $ref: "CreateUserBody" }
     }
 });
