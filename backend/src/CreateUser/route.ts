@@ -28,6 +28,9 @@ export const createNewUserRoute = (
         }
     },
     schema: {
+        body: { $ref: "CreateUserBody#" }
+    }
+    /*schema: {
         body: {
             type: "object",
             required: ["username", "password"],
@@ -44,5 +47,23 @@ export const createNewUserRoute = (
                 }
             }
         }
-    }
+    }*/
 });
+
+export const CreateUserBodySchema = {
+    $id: "CreateUserBody",
+    type: "object",
+    required: ["username", "password"],
+    properties: {
+        username: {
+            type: "string",
+            minLength: 3,
+            maxLength: 20
+        },
+        password: {
+            type: "string",
+            minLength: 8,
+            maxLength: 64
+        }
+    }
+};

@@ -4,6 +4,7 @@ import { UserCredentials } from "../sharedResources";
 import { Bcrypt } from "../utils";
 import { CreateUserDatabase } from "./database/CreateUserDatabase";
 import { DuplicateUserError } from "./database/errors";
+import { addRouteSharedSchemas } from "../addRouteSharedSchemas";
 
 jest.mock("../utils", () => {
     return {
@@ -40,6 +41,7 @@ describe("POST /users should", () => {
     );
     mockedBcrypt.hash = mockedBcryptHash;
     beforeAll(() => {
+        addRouteSharedSchemas(server);
         server.route(createNewUserRoute(mockedDatabase, mockedBcrypt));
     });
     beforeEach(() => {
@@ -117,6 +119,7 @@ describe("POST /users should return Bad Request (400) if", () => {
         password: "password"
     };
     beforeAll(() => {
+        addRouteSharedSchemas(server);
         server.route(createNewUserRoute(mockedDatabase, mockedBcrypt));
     });
     beforeEach(() => {
