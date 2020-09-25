@@ -233,3 +233,71 @@ describe("POST /events should", () => {
         expect(mockedInsertOne.mock.calls.length).toBe(0);
     });
 });
+
+describe("POST /events should return Bad Request(400) if", () => {
+    const server = fastify();
+    const createEventDatabase = new MockedCreateEventDatabase();
+    const authorizationDatabase = new MockedAuthorizationDatabase();
+    authorizationDatabase.checkIfUserIdIsRegistered = jest.fn(() =>
+        Promise.resolve(true)
+    );
+    const mockedInsertOne = jest.fn();
+    const mockedGetOtherEventsWithSameOwner = jest.fn();
+    createEventDatabase.insertOne = mockedInsertOne;
+    createEventDatabase.getOtherEventsWithSameOwner = mockedGetOtherEventsWithSameOwner;
+    const secret = "a secret";
+    const jwt = new Jwt(secret);
+    const existingUserId = "a registered uuid";
+    let token: string;
+    let headers: IncomingHttpHeaders;
+    beforeAll(async () => {
+        token = await jwt.sign({ userId: existingUserId });
+        headers = {
+            authorization: `Bearer ${token}`
+        };
+        server.route(
+            createNewEventRoute({
+                jwt,
+                authorizationDatabase,
+                createEventDatabase
+            })
+        );
+    });
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+    afterAll(async () => {
+        await server.close();
+    });
+
+    test("event begins after it should have ended", async () => {
+        const eventEnd = new Date();
+        const invalidEvent: CreateEventBody = {
+            begin: new Date(eventEnd.getTime() + 1000),
+            end: eventEnd
+        };
+        const response = await server.inject({
+            ...methodAndRoute,
+            headers,
+            payload: invalidEvent
+        });
+        expect(response.statusCode).toBe(400);
+        expect(mockedInsertOne.mock.calls.length).toBe(0);
+        expect(mockedGetOtherEventsWithSameOwner.mock.calls.length).toBe(0);
+    });
+    test("event beginning and end are equal", async () => {
+        const eventTime = new Date();
+        const invalidEvent: CreateEventBody = {
+            begin: eventTime,
+            end: eventTime
+        };
+        const response = await server.inject({
+            ...methodAndRoute,
+            headers,
+            payload: invalidEvent
+        });
+        expect(response.statusCode).toBe(400);
+        expect(mockedInsertOne.mock.calls.length).toBe(0);
+        expect(mockedGetOtherEventsWithSameOwner.mock.calls.length).toBe(0);
+    });
+});

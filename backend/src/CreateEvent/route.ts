@@ -55,6 +55,10 @@ export const createNewEventRoute = ({
             begin: new Date(body.begin),
             end: new Date(body.end)
         };
+        if (convertedBody.begin.getTime() >= convertedBody.end.getTime()) {
+            await reply.status(400).send();
+            return;
+        }
         const newEvent = {
             ...convertedBody,
             creatorId: decodedToken.userId
