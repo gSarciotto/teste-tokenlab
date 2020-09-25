@@ -18,10 +18,9 @@ function doesTwoEventsOverlaps(firstEvent: Event, secondEvent: Event): boolean {
     const secondEventEnd = secondEvent.end.getTime();
 
     const doesFirstEventStartsInsideSecondEvent =
-        secondEventBegin <= firstEventBegin &&
-        firstEventBegin <= secondEventEnd;
+        secondEventBegin <= firstEventBegin && firstEventBegin < secondEventEnd;
     const doesFirstEventEndsInsideSecondEvent =
-        secondEventBegin <= firstEventEnd && firstEventEnd <= secondEventEnd;
+        secondEventBegin < firstEventEnd && firstEventEnd <= secondEventEnd;
     return (
         doesFirstEventStartsInsideSecondEvent ||
         doesFirstEventEndsInsideSecondEvent
