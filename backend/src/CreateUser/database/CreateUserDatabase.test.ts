@@ -33,6 +33,7 @@ describe("CreateUserDatabase.insertOne should", () => {
         await clearUsersTable(database);
     });
     afterAll(async () => {
+        await clearUsersTable(database);
         await database.pool.end();
     });
     test("insert a valid user", async () => {
