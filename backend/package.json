@@ -7,9 +7,9 @@
     "start": "ts-node-dev --clear --rs -- src/index.ts",
     "start:debug": "ts-node-dev --debug --rs -- src/index.ts",
     "build": "npx tsc -p tsconfig.build.json",
-    "test": "jest src",
-    "test:watch": "jest --watch src",
-    "test:debug": "jest --debug src"
+    "test": "jest -i src",
+    "test:watch": "jest --watch -i src",
+    "test:debug": "jest --debug -i src"
   },
   "keywords": [],
   "author": "",
