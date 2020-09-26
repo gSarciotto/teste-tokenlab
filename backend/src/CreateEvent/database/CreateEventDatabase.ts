@@ -20,7 +20,7 @@ const dateParam = (
 export class CreateEventDatabase implements ICreateEventDatabase {
     constructor(private database: IDatabase, private uuid: IUuid) {}
     async insertOne(event: Event): Promise<void> {
-        const id = this.uuid.generateV4();
+        const id = event.id ? event.id : this.uuid.generateV4();
         await this.database.pool.any(
             sql`INSERT INTO events (id, creator_id, begin_time, end_time) VALUES (${id}, ${
                 event.creatorId
