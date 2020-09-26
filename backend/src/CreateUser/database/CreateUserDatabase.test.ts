@@ -49,7 +49,6 @@ describe("CreateUserDatabase.insertOne should", () => {
         >(sql`SELECT * FROM users WHERE username=${validUser.username}`);
         expect(select).toEqual(expected);
         expect(mockedUuidGenerate.mock.calls.length).toBe(1);
-        await database.pool.query(sql`DELETE FROM users WHERE id=${id}`);
     });
     test("throw if attempting to insert existing user", async () => {
         const anotherId = "6ec0bd7f-11c0-43da-975e-2a8ad9ebae0b";

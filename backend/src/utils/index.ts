@@ -15,3 +15,5 @@ export {
     AuthorizationDatabase,
     IAuthorizationDatabase
 } from "./authorization/AuthorizationDatabase";
+
+export { convertEventModelToEvent } from "./converters/EventModelToEvent";
