@@ -23,7 +23,8 @@ describe("DeleteEventDatabase should", () => {
         id: existingEventId,
         creatorId: existingUserId,
         begin: new Date(),
-        end: new Date(Date.now() + 1000)
+        end: new Date(Date.now() + 1000),
+        description: "this is an event"
     };
     const createEventDatabase = new CreateEventDatabase(database, uuid);
     beforeEach(async () => {
@@ -43,7 +44,8 @@ describe("DeleteEventDatabase should", () => {
             id: anotherEventId,
             creatorId: existingUserId,
             begin: new Date(),
-            end: new Date(Date.now() + 52000)
+            end: new Date(Date.now() + 52000),
+            description: "this is another event"
         };
         await createEventDatabase.insertOne(existingEvent);
         await createEventDatabase.insertOne(anotherEvent);

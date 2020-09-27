@@ -31,7 +31,9 @@ export class UpdateEventDatabase implements IUpdateEventDatabase {
             await this.database.pool.one(
                 sql`UPDATE events SET begin_time=${dateParam(
                     eventInformation.begin
-                )}, end_time=${dateParam(eventInformation.end)} WHERE id=${
+                )}, end_time=${dateParam(eventInformation.end)}, description=${
+                    eventInformation.description
+                } WHERE id=${
                     eventInformation.id
                 } AND creator_id=${creatorId} RETURNING *`
             );

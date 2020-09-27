@@ -8,7 +8,7 @@ import {
 import { ICreateEventDatabase } from "./database/CreateEventDatabase";
 import { doesEventOverlaps } from "./utils";
 
-export type CreateEventBody = Pick<Event, "begin" | "end">;
+export type CreateEventBody = Pick<Event, "begin" | "end" | "description">;
 
 interface createNewEventRouteArguments {
     jwt: IJwt;
@@ -19,6 +19,7 @@ interface createNewEventRouteArguments {
 interface createNewEventRouteBody {
     begin: string;
     end: string;
+    description: string;
 }
 
 export const createNewEventRoute = ({
@@ -53,13 +54,14 @@ export const createNewEventRoute = ({
         const body = request.body as createNewEventRouteBody;
         const convertedBody = {
             begin: new Date(body.begin),
-            end: new Date(body.end)
+            end: new Date(body.end),
+            description: body.description
         };
         if (convertedBody.begin.getTime() >= convertedBody.end.getTime()) {
             await reply.status(400).send();
             return;
         }
-        const newEvent = {
+        const newEvent: Event = {
             ...convertedBody,
             creatorId: decodedToken.userId
         };
@@ -80,7 +82,7 @@ export const createNewEventRoute = ({
     schema: {
         body: {
             type: "object",
-            required: ["begin", "end"],
+            required: ["begin", "end", "description"],
             properties: {
                 begin: {
                     type: "string",
@@ -89,6 +91,10 @@ export const createNewEventRoute = ({
                 end: {
                     type: "string",
                     format: "date-time"
+                },
+                description: {
+                    type: "string",
+                    maxLength: 100
                 }
             }
         }

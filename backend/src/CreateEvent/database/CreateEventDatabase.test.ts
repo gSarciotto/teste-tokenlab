@@ -25,7 +25,8 @@ describe("CreateEventDatabase.insertOne should", () => {
     const newEvent: Event = {
         creatorId: existingUserId,
         begin: new Date(),
-        end: new Date(Date.now() + 1000)
+        end: new Date(Date.now() + 1000),
+        description: "this is a new event"
     };
     beforeAll(async () => {
         await clearTables(database);
@@ -44,18 +45,19 @@ describe("CreateEventDatabase.insertOne should", () => {
     test("create an event", async () => {
         await createEventDatabase.insertOne(newEvent);
         const results = await database.pool.one<EventModel>(
-            sql`SELECT creator_id, begin_time, end_time FROM events WHERE creator_id=${existingUserId}`
+            sql`SELECT creator_id, begin_time, end_time, description FROM events WHERE creator_id=${existingUserId}`
         );
         const convertedResults = convertEventModelToEvent(results);
         expect(convertedResults.creatorId).toBe(existingUserId);
         expect(convertedResults.begin.getTime()).toBe(newEvent.begin.getTime());
         expect(convertedResults.end.getTime()).toBe(newEvent.end.getTime());
+        expect(convertedResults.description).toBe(newEvent.description);
     });
     test("create multiple events associated with the same user", async () => {
         await createEventDatabase.insertOne(newEvent);
         await createEventDatabase.insertOne(newEvent);
         const results = await database.pool.many<EventModel>(
-            sql`SELECT creator_id, begin_time, end_time FROM events WHERE creator_id=${existingUserId}`
+            sql`SELECT creator_id, begin_time, end_time, description FROM events WHERE creator_id=${existingUserId}`
         );
         const convertedResults = results.map((row) =>
             convertEventModelToEvent(row)
@@ -71,6 +73,8 @@ describe("CreateEventDatabase.insertOne should", () => {
         );
         expect(convertedResults[0].end.getTime()).toBe(newEvent.end.getTime());
         expect(convertedResults[1].end.getTime()).toBe(newEvent.end.getTime());
+        expect(convertedResults[0].description).toBe(newEvent.description);
+        expect(convertedResults[1].description).toBe(newEvent.description);
     });
 });
 
@@ -82,7 +86,8 @@ describe("CreateEventDatabase.getOtherEventsWithSameOwner", () => {
     const event1: Event = {
         creatorId: existingUserId,
         begin: new Date(),
-        end: new Date(Date.now() + 1000)
+        end: new Date(Date.now() + 1000),
+        description: "another event"
     };
     beforeAll(async () => {
         await clearTables(database);
@@ -111,7 +116,8 @@ describe("CreateEventDatabase.getOtherEventsWithSameOwner", () => {
         const event2: Event = {
             creatorId: anotherUserId,
             begin: new Date(Date.now() + 10000),
-            end: new Date(Date.now() + 200000)
+            end: new Date(Date.now() + 200000),
+            description: "this is an event of another user"
         };
         await database.pool.any(
             sql`INSERT INTO users (id, username, password) VALUES (${anotherUserId}, ${anotherUserUsername}, ${anotherPassword})`
@@ -125,6 +131,7 @@ describe("CreateEventDatabase.getOtherEventsWithSameOwner", () => {
         expect(result[0].creatorId).toBe(event1.creatorId);
         expect(result[0].begin.getTime()).toBe(event1.begin.getTime());
         expect(result[0].end.getTime()).toBe(event1.end.getTime());
+        expect(result[0].description).toBe(event1.description);
     });
     test("return array with many elements when there is more than one event associated with user", async () => {
         const anotherUserId = uuid.generateV4();
@@ -133,12 +140,14 @@ describe("CreateEventDatabase.getOtherEventsWithSameOwner", () => {
         const event2: Event = {
             creatorId: anotherUserId,
             begin: new Date(Date.now() + 10000),
-            end: new Date(Date.now() + 200000)
+            end: new Date(Date.now() + 200000),
+            description: "this is an event of another user"
         };
         const anotherEvent1: Event = {
             creatorId: existingUserId,
             begin: new Date(Date.now() + 10000),
-            end: new Date(Date.now() + 300000)
+            end: new Date(Date.now() + 300000),
+            description: "this is another event"
         };
         await database.pool.any(
             sql`INSERT INTO users (id, username, password) VALUES (${anotherUserId}, ${anotherUserUsername}, ${anotherPassword})`
@@ -153,8 +162,10 @@ describe("CreateEventDatabase.getOtherEventsWithSameOwner", () => {
         expect(result[0].creatorId).toBe(existingUserId);
         expect(result[0].begin.getTime()).toBe(event1.begin.getTime());
         expect(result[0].end.getTime()).toBe(event1.end.getTime());
+        expect(result[0].description).toBe(event1.description);
         expect(result[1].creatorId).toBe(existingUserId);
         expect(result[1].begin.getTime()).toBe(anotherEvent1.begin.getTime());
         expect(result[1].end.getTime()).toBe(anotherEvent1.end.getTime());
+        expect(result[1].description).toBe(anotherEvent1.description);
     });
 });

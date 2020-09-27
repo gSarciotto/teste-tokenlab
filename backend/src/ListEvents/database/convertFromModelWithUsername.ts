@@ -8,6 +8,7 @@ export function convertFromModel(
         id: model.id,
         creatorUsername: model.creator_username,
         begin: new Date(model.begin_time),
-        end: new Date(model.end_time)
+        end: new Date(model.end_time),
+        description: model.description
     };
 }

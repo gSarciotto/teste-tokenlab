@@ -11,5 +11,6 @@ CREATE TABLE events(
     id uuid PRIMARY KEY,
     creator_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     begin_time timestamp with time zone NOT NULL,
-    end_time timestamp with time zone NOT NULL
+    end_time timestamp with time zone NOT NULL,
+    description varchar(100) NOT NULL
 );

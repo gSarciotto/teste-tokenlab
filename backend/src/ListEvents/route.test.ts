@@ -154,13 +154,15 @@ describe("GET /events should return Ok (200) and", () => {
             id: "id1",
             creatorUsername,
             begin: new Date(),
-            end: new Date(Date.now() + 1000)
+            end: new Date(Date.now() + 1000),
+            description: "this is event1"
         };
         const event2: EventWithUsername = {
             id: "id2",
             creatorUsername,
             begin: new Date(Date.now() + 500),
-            end: new Date(Date.now() + 2500)
+            end: new Date(Date.now() + 2500),
+            description: "this is event2"
         };
         const mockedGetEvents = jest.fn((ownerId: string) =>
             Promise.resolve([event1, event2])
@@ -175,7 +177,27 @@ describe("GET /events should return Ok (200) and", () => {
             events: EventWithUsername[];
         }>();
         expect(convertedPayload.events[0].id).toBe(event1.id);
+        expect(convertedPayload.events[0].creatorUsername).toBe(
+            event1.creatorUsername
+        );
+        expect(convertedPayload.events[0].description).toBe(event1.description);
+        expect(new Date(convertedPayload.events[0].begin).getTime()).toBe(
+            event1.begin.getTime()
+        );
+        expect(new Date(convertedPayload.events[0].end).getTime()).toBe(
+            event1.end.getTime()
+        );
         expect(convertedPayload.events[1].id).toBe(event2.id);
+        expect(convertedPayload.events[1].creatorUsername).toBe(
+            event2.creatorUsername
+        );
+        expect(convertedPayload.events[1].description).toBe(event2.description);
+        expect(new Date(convertedPayload.events[1].begin).getTime()).toBe(
+            event2.begin.getTime()
+        );
+        expect(new Date(convertedPayload.events[1].end).getTime()).toBe(
+            event2.end.getTime()
+        );
         expect(mockedGetEvents.mock.calls[0][0]).toBe(existingUserId);
     });
 });

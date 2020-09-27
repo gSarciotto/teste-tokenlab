@@ -36,7 +36,8 @@ describe("POST /events should return Unauthorized (401) if unable to identify us
     const jwt = new Jwt(secret);
     const newEvent: CreateEventBody = {
         begin: new Date(),
-        end: new Date()
+        end: new Date(),
+        description: "any description"
     };
     beforeAll(() => {
         server.route(
@@ -99,7 +100,8 @@ test("POST /events should return Not Found (404) if userId encoded in jwt is not
     const token = await jwt.sign({ userId: inexistentUserId });
     const newEvent: CreateEventBody = {
         begin: new Date(),
-        end: new Date()
+        end: new Date(),
+        description: "any description"
     };
     const response = await server.inject({
         ...methodAndRoute,
@@ -151,7 +153,8 @@ describe("POST /events should", () => {
         createEventDatabase.getOtherEventsWithSameOwner = mockedGetOtherEventsWithSameOwner;
         const newEvent: CreateEventBody = {
             begin: new Date(),
-            end: new Date(Date.now() + 1000)
+            end: new Date(Date.now() + 1000),
+            description: "any description"
         };
         const response = await server.inject({
             ...methodAndRoute,
@@ -168,6 +171,9 @@ describe("POST /events should", () => {
             newEvent.end.getTime()
         );
         expect(mockedInsertOne.mock.calls[0][0].creatorId).toBe(existingUserId);
+        expect(mockedInsertOne.mock.calls[0][0].description).toBe(
+            newEvent.description
+        );
     });
     test("return Created (201) when trying to create a new event when there is another event with same owner but no overlaps", async () => {
         const mockedInsertOne = jest.fn((event: Event) => Promise.resolve());
@@ -175,14 +181,16 @@ describe("POST /events should", () => {
         createEventDatabase.insertOne = mockedInsertOne;
         const newEvent: CreateEventBody = {
             begin: new Date(),
-            end: new Date(Date.now() + 1000)
+            end: new Date(Date.now() + 1000),
+            description: "any description"
         };
         const mockedGetOtherEventsWithSameOwner = jest.fn((ownerId: string) =>
             Promise.resolve([
                 {
                     creatorId: existingUserId,
                     begin: new Date(newEvent.begin.getTime() - 1000),
-                    end: new Date(newEvent.begin.getTime() - 500)
+                    end: new Date(newEvent.begin.getTime() - 500),
+                    description: "this is another description"
                 }
             ])
         );
@@ -202,6 +210,9 @@ describe("POST /events should", () => {
             newEvent.end.getTime()
         );
         expect(mockedInsertOne.mock.calls[0][0].creatorId).toBe(existingUserId);
+        expect(mockedInsertOne.mock.calls[0][0].description).toBe(
+            newEvent.description
+        );
     });
     test("return Conflict (409) when trying to create a new event which overlaps with another event of same user", async () => {
         const mockedInsertOne = jest.fn();
@@ -209,12 +220,14 @@ describe("POST /events should", () => {
         const newEventDuration = 1000;
         const newEvent: CreateEventBody = {
             begin: new Date(),
-            end: new Date(Date.now() + newEventDuration)
+            end: new Date(Date.now() + newEventDuration),
+            description: "any description"
         };
         const overlappedEvent: Event = {
             creatorId: existingUserId,
             begin: new Date(newEvent.begin.getTime() + newEventDuration / 2),
-            end: new Date(newEvent.end.getTime() + newEventDuration)
+            end: new Date(newEvent.end.getTime() + newEventDuration),
+            description: "this event overlaps"
         };
         const mockedGetOtherEventsWithSameOwner = jest.fn((ownerId: string) =>
             Promise.resolve([overlappedEvent])
@@ -274,7 +287,8 @@ describe("POST /events should return Bad Request(400) if", () => {
         const eventEnd = new Date();
         const invalidEvent: CreateEventBody = {
             begin: new Date(eventEnd.getTime() + 1000),
-            end: eventEnd
+            end: eventEnd,
+            description: "this event is invalid"
         };
         const response = await server.inject({
             ...methodAndRoute,
@@ -289,7 +303,8 @@ describe("POST /events should return Bad Request(400) if", () => {
         const eventTime = new Date();
         const invalidEvent: CreateEventBody = {
             begin: eventTime,
-            end: eventTime
+            end: eventTime,
+            description: "this event is invalid"
         };
         const response = await server.inject({
             ...methodAndRoute,

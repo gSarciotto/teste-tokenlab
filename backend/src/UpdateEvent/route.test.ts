@@ -39,7 +39,8 @@ describe("PUT /events should return Unauthorized (401) if unable to identify use
     const newEvent: ConvertedUpdateEventBody = {
         id: uuid.generateV4(),
         begin: new Date(),
-        end: new Date()
+        end: new Date(),
+        description: "this is an event"
     };
     beforeAll(() => {
         server.route(
@@ -110,7 +111,8 @@ test("PUT /events should return Not Found (404) if userId encoded in jwt is not 
     const newEvent: ConvertedUpdateEventBody = {
         id: uuid.generateV4(),
         begin: new Date(),
-        end: new Date()
+        end: new Date(),
+        description: "this is an event"
     };
     const response = await server.inject({
         ...methodAndRoute,
@@ -136,7 +138,8 @@ describe("PUT /events should", () => {
     const updatedEvent: ConvertedUpdateEventBody = {
         id: uuid.generateV4(),
         begin: new Date(),
-        end: new Date(Date.now() + 1000)
+        end: new Date(Date.now() + 1000),
+        description: "this is description was updated"
     };
     let headers: IncomingHttpHeaders;
     let token: string;
@@ -233,7 +236,8 @@ describe("PUT /events should return Bad Request (400) if", () => {
         const invalidEvent: ConvertedUpdateEventBody = {
             id: uuid.generateV4(),
             begin: new Date(endTime.getTime() + 1000),
-            end: endTime
+            end: endTime,
+            description: "this event is invalid"
         };
         const response = await server.inject({
             ...methodAndRoute,
@@ -249,7 +253,8 @@ describe("PUT /events should return Bad Request (400) if", () => {
         const invalidEvent: ConvertedUpdateEventBody = {
             id: uuid.generateV4(),
             begin: time,
-            end: time
+            end: time,
+            description: "this event is invalid"
         };
         const response = await server.inject({
             ...methodAndRoute,
@@ -264,7 +269,8 @@ describe("PUT /events should return Bad Request (400) if", () => {
         const invalidEvent: ConvertedUpdateEventBody = {
             id: "not an uuid",
             begin: new Date(),
-            end: new Date(Date.now() + 1000)
+            end: new Date(Date.now() + 1000),
+            description: "this event is invalid"
         };
         const response = await server.inject({
             ...methodAndRoute,
@@ -279,7 +285,8 @@ describe("PUT /events should return Bad Request (400) if", () => {
         const invalidEvent = {
             id: uuid.generateV4(),
             begin: "not an date",
-            end: new Date()
+            end: new Date(),
+            description: "this event is invalid"
         };
         const response = await server.inject({
             ...methodAndRoute,
@@ -296,7 +303,8 @@ describe("PUT /events should return Bad Request (400) if", () => {
         const invalidEvent = {
             id: uuid.generateV4(),
             end: "not an date",
-            begin: new Date()
+            begin: new Date(),
+            description: "this event is invalid"
         };
         const response = await server.inject({
             ...methodAndRoute,

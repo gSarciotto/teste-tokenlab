@@ -3,4 +3,5 @@ export interface EventModel {
     creator_id: string;
     begin_time: number;
     end_time: number;
+    description: string;
 }

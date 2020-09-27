@@ -20,9 +20,13 @@ interface UpdateEventBody {
     id: string;
     begin: string;
     end: string;
+    description: string;
 }
 
-export type ConvertedUpdateEventBody = Pick<Event, "begin" | "end"> & {
+export type ConvertedUpdateEventBody = Pick<
+    Event,
+    "begin" | "end" | "description"
+> & {
     id: string;
 };
 
@@ -60,7 +64,8 @@ export const createUpdateEventRoute = ({
         const convertedBody: ConvertedUpdateEventBody = {
             id: body.id,
             begin: new Date(body.begin),
-            end: new Date(body.end)
+            end: new Date(body.end),
+            description: body.description
         };
         if (!uuid.validate(convertedBody.id)) {
             await reply.status(400).send("Invalid event id");
@@ -91,7 +96,7 @@ export const createUpdateEventRoute = ({
     schema: {
         body: {
             type: "object",
-            required: ["id", "begin", "end"],
+            required: ["id", "begin", "end", "description"],
             properties: {
                 id: {
                     type: "string"
@@ -103,6 +108,10 @@ export const createUpdateEventRoute = ({
                 end: {
                     type: "string",
                     format: "date-time"
+                },
+                description: {
+                    type: "string",
+                    maxLength: 100
                 }
             }
         }

@@ -25,7 +25,8 @@ describe("UpdateEventDatabase.updateEvent should", () => {
         id: existingEventId,
         creatorId: existingUserId,
         begin: new Date(),
-        end: new Date(Date.now() + 1000)
+        end: new Date(Date.now() + 1000),
+        description: "this is an existing event"
     };
 
     beforeEach(async () => {
@@ -44,7 +45,8 @@ describe("UpdateEventDatabase.updateEvent should", () => {
         const updatedEvent: ConvertedUpdateEventBody = {
             id: existingEventId,
             begin: new Date(Date.now() + 5000),
-            end: new Date(Date.now() + 10000)
+            end: new Date(Date.now() + 10000),
+            description: "this description was updated"
         };
         await updateEventDatabase.updateEvent(updatedEvent, existingUserId);
         const events = await createEventDatabase.getOtherEventsWithSameOwner(
@@ -55,12 +57,14 @@ describe("UpdateEventDatabase.updateEvent should", () => {
         expect(events[0].creatorId).toBe(existingUserId);
         expect(events[0].begin.getTime()).toBe(updatedEvent.begin.getTime());
         expect(events[0].end.getTime()).toBe(updatedEvent.end.getTime());
+        expect(events[0].description).toBe(updatedEvent.description);
     });
     test("throw NotFound when trying to update inexistent event", async () => {
         const nonExistentEvent: ConvertedUpdateEventBody = {
             id: uuid.generateV4(),
             begin: new Date(),
-            end: new Date()
+            end: new Date(),
+            description: "this event doesnt exist"
         };
         await expect(
             updateEventDatabase.updateEvent(nonExistentEvent, existingUserId)
@@ -71,13 +75,15 @@ describe("UpdateEventDatabase.updateEvent should", () => {
         expect(events.length).toBe(1);
         expect(events[0].begin.getTime()).toBe(existingEvent.begin.getTime());
         expect(events[0].end.getTime()).toBe(existingEvent.end.getTime());
+        expect(events[0].description).toBe(existingEvent.description);
     });
     test("throw NotFound when trying to update event that user doesn't own", async () => {
         const anotherUser = uuid.generateV4();
         const updatedEvent: ConvertedUpdateEventBody = {
             id: existingEventId,
             begin: new Date(),
-            end: new Date()
+            end: new Date(),
+            description: "this description was updated"
         };
         await expect(
             updateEventDatabase.updateEvent(updatedEvent, anotherUser)
@@ -88,5 +94,6 @@ describe("UpdateEventDatabase.updateEvent should", () => {
         expect(events.length).toBe(1);
         expect(events[0].begin.getTime()).toBe(existingEvent.begin.getTime());
         expect(events[0].end.getTime()).toBe(existingEvent.end.getTime());
+        expect(events[0].description).toBe(existingEvent.description);
     });
 });

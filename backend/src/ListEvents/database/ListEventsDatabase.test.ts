@@ -46,19 +46,22 @@ describe("ListEventsDatabase.getEvents should", () => {
             id: uuid.generateV4(),
             creatorId: existingUser.id,
             begin: new Date(),
-            end: new Date(Date.now() + 1000)
+            end: new Date(Date.now() + 1000),
+            description: "this is event1"
         };
         const event2: Event = {
             id: uuid.generateV4(),
             creatorId: existingUser.id,
             begin: new Date(event1.begin.getTime() + 5000),
-            end: new Date(Date.now() + 10000)
+            end: new Date(Date.now() + 10000),
+            description: "this is event2"
         };
         const anotherEvent: Event = {
             id: uuid.generateV4(),
             creatorId: anotherUser.id,
             begin: new Date(),
-            end: new Date(Date.now() + 2000)
+            end: new Date(Date.now() + 2000),
+            description: "this is another event"
         };
         await createEventDatabase.insertOne(event1);
         await createEventDatabase.insertOne(event2);
