@@ -2,8 +2,12 @@ import fastify from "fastify";
 import { config } from "dotenv";
 import { addRouteSharedSchemas } from "./addRouteSharedSchemas";
 import { createNewUserRoute, CreateUserDatabase } from "./CreateUser";
+import { createNewEventRoute, CreateEventDatabase } from "./CreateEvent";
+import { createDeleteEventRoute, DeleteEventDatabase } from "./DeleteEvent";
+import { createListEventsRoute, ListEventsDatabase } from "./ListEvents";
+import { createUpdateEventRoute, UpdateEventDatabase } from "./UpdateEvent";
 import { createLoginRoute, LoginDatabase } from "./Login";
-import { Bcrypt, Database, Uuid, Jwt } from "./utils";
+import { Bcrypt, Database, Uuid, Jwt, AuthorizationDatabase } from "./utils";
 
 config();
 
@@ -21,13 +25,36 @@ const jwt = new Jwt(secret);
 const database = new Database(process.env.DB_CONNECTION);
 const createUserDatabase = new CreateUserDatabase(database, uuid);
 const loginDatabase = new LoginDatabase(database);
+const createEventDatabase = new CreateEventDatabase(database, uuid);
+const deleteEventDatabase = new DeleteEventDatabase(database);
+const listEventsDatabase = new ListEventsDatabase(database);
+const updateEventDatabase = new UpdateEventDatabase(database);
+const authorizationDatabase = new AuthorizationDatabase(database);
 
 server.route(createNewUserRoute(createUserDatabase, bcrypt));
 server.route(createLoginRoute(loginDatabase, bcrypt, jwt));
-
-server.get("/", async function (request, reply) {
-    await reply.send("hello world");
-});
+server.route(
+    createNewEventRoute({ jwt, createEventDatabase, authorizationDatabase })
+);
+server.route(
+    createDeleteEventRoute({
+        jwt,
+        deleteEventDatabase,
+        authorizationDatabase,
+        uuid
+    })
+);
+server.route(
+    createListEventsRoute({ listEventsDatabase, jwt, authorizationDatabase })
+);
+server.route(
+    createUpdateEventRoute({
+        uuid,
+        jwt,
+        authorizationDatabase,
+        updateEventDatabase
+    })
+);
 
 server.listen(3000, function (err, address) {
     if (err) {
