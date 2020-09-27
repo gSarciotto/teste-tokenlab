@@ -8,11 +8,15 @@ import { createListEventsRoute, ListEventsDatabase } from "./ListEvents";
 import { createUpdateEventRoute, UpdateEventDatabase } from "./UpdateEvent";
 import { createLoginRoute, LoginDatabase } from "./Login";
 import { Bcrypt, Database, Uuid, Jwt, AuthorizationDatabase } from "./utils";
+import fastifyCors from "fastify-cors";
 
 config();
 
 const server = fastify();
 addRouteSharedSchemas(server);
+void server.register(fastifyCors, {
+    origin: true
+});
 
 const secret = process.env.JWT_SECRET;
 if (!secret) {
