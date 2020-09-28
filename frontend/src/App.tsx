@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { makeStyles, Theme, useTheme } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import { LoginAndRegisterPage } from "./pages/LoginAndRegister";
-import "./App.css";
+import { CalendarPage } from "./pages/Calendar";
 
 const useStyles = makeStyles({
     globalContainer: (theme: Theme) => ({
@@ -16,7 +16,9 @@ const useStyles = makeStyles({
 function App(): JSX.Element {
     const theme = useTheme();
     const classes = useStyles(theme);
-    const [userToken, setUserToken] = useState("");
+    const [userToken, setUserToken] = useState(
+        "99b687ea-e5dd-4089-bc34-8127f06778ef"
+    );
     const changeUserToken = (newToken: string): void => {
         setUserToken(newToken);
     };
@@ -28,7 +30,16 @@ function App(): JSX.Element {
             alignItems="center"
             color="primary"
         >
-            <LoginAndRegisterPage updateAuthenticatedUser={changeUserToken} />
+            {userToken === "" ? (
+                <LoginAndRegisterPage
+                    updateAuthenticatedUser={changeUserToken}
+                />
+            ) : (
+                <CalendarPage
+                    token={userToken}
+                    updateAuthenticatedUser={changeUserToken}
+                />
+            )}
         </Grid>
     );
 }
