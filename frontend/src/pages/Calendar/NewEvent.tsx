@@ -120,16 +120,12 @@ export function NewEventContainer(props: NewEventContainerProps): JSX.Element {
                                         message: result.message
                                     });
                                     props.updateEvents();
+                                } else {
+                                    setCreateEventAction({
+                                        status: "error",
+                                        message: result.message
+                                    });
                                 }
-                                /*result.status
-                                    ? setCreateEventAction({
-                                          status: "success",
-                                          message: result.message
-                                      })
-                                    : setCreateEventAction({
-                                          status: "error",
-                                          message: result.message
-                                      });*/
                             })
                             .catch((err) => {
                                 console.log("Network error on event creation");

@@ -66,9 +66,6 @@ export function CalendarPage(props: CalendarPageProps): JSX.Element {
             setShouldFetchEvents(false);
         }
     }, [props.token, shouldFetchEvents]);
-    useEffect(() => {
-        console.log(allEvents);
-    }, [allEvents]);
     const deleteEvent = async (eventId: string): Promise<void> => {
         const result = await deleteEventFetch({
             token: props.token,
