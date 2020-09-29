@@ -23,3 +23,20 @@ export function shouldElementBeSelected(
         selectedDateDayMonthYear.getTime() <= endDayMonthYear.getTime()
     );
 }
+
+export function convertDateToInputFormat(date: Date): string {
+    const dateLocale = date
+        .toLocaleString("pt-BR", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit"
+        })
+        .split("/")
+        .reverse()
+        .join("-");
+    const timeLocale = date.toLocaleString("pt-BR", {
+        hour: "2-digit",
+        minute: "2-digit"
+    });
+    return `${dateLocale}T${timeLocale}`;
+}

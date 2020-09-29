@@ -7,7 +7,12 @@ import Typography from "@material-ui/core/Typography";
 import List from "@material-ui/core/List";
 import Grid from "@material-ui/core/Grid";
 import { NewEventContainer, NewEventContainerProps } from "./NewEvent";
-import { Event, getEvents, deleteEventFetch } from "./fetches";
+import {
+    Event,
+    getEvents,
+    deleteEventFetch,
+    updateEventFetch
+} from "./fetches";
 import { shouldElementBeSelected } from "./utils";
 import { EventComponent } from "./EventComponent";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
@@ -68,6 +73,19 @@ export function CalendarPage(props: CalendarPageProps): JSX.Element {
         const result = await deleteEventFetch({
             token: props.token,
             eventId
+        });
+        setActionStatus({
+            status: result.status ? "success" : "error",
+            message: result.message
+        });
+        setShouldFetchEvents(result.status);
+    };
+    const updateEvent = async (
+        eventInfo: Omit<Event, "username">
+    ): Promise<void> => {
+        const result = await updateEventFetch({
+            token: props.token,
+            ...eventInfo
         });
         setActionStatus({
             status: result.status ? "success" : "error",
@@ -144,6 +162,7 @@ export function CalendarPage(props: CalendarPageProps): JSX.Element {
                     disablePadding
                 >
                     {allEvents
+                        .reverse()
                         .filter((event) =>
                             shouldElementBeSelected(
                                 selectedDate,
@@ -155,6 +174,7 @@ export function CalendarPage(props: CalendarPageProps): JSX.Element {
                             <EventComponent
                                 event={event}
                                 deleteEvent={deleteEvent}
+                                updateEvent={updateEvent}
                                 key={event.id}
                             />
                         ))}

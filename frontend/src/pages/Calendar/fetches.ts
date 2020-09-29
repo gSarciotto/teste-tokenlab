@@ -17,7 +17,6 @@ export async function createEvent({
     description
 }: CreateEventParams): Promise<CreateEventResult> {
     let result: CreateEventResult;
-    console.log(begin);
     const response = await fetch("http://localhost:3000/events", {
         method: "POST",
         headers: {
@@ -164,6 +163,50 @@ export async function deleteEventFetch({
         return Promise.resolve({
             status: false,
             message: "Erro desconhecido ao deletar um evento."
+        });
+    }
+}
+
+type UpdateEventParams = CreateEventParams & { id: string };
+type UpdateEventResult = CreateEventResult;
+
+export async function updateEventFetch({
+    token,
+    id,
+    begin,
+    end,
+    description
+}: UpdateEventParams): Promise<UpdateEventResult> {
+    const response = await fetch("http://localhost:3000/events", {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ begin, end, description, id })
+    });
+    if (response.status === 201) {
+        return Promise.resolve({
+            status: true,
+            message: "Evento atualizado com sucesso!"
+        });
+    } else if (response.status === 400) {
+        return Promise.resolve({
+            status: false,
+            message:
+                "Falha na autenticação. Redirecionando para a tela de login..."
+        });
+    } else if (response.status === 404) {
+        return Promise.resolve({
+            status: false,
+            message:
+                "Evento não encontrado ou você não possue permissão para deletar esse evento."
+        });
+    } else {
+        console.log("Erro desconhecido update event: ", response.body);
+        return Promise.resolve({
+            status: false,
+            message: "Erro desconhecido ao atualizar um evento."
         });
     }
 }

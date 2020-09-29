@@ -16,11 +16,8 @@ const useStyles = makeStyles({
 function App(): JSX.Element {
     const theme = useTheme();
     const classes = useStyles(theme);
-    const [userToken, setUserToken] = useState(
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI5OWI2ODdlYS1lNWRkLTQwODktYmMzNC04MTI3ZjA2Nzc4ZWYiLCJpYXQiOjE2MDEzODEzOTAsImV4cCI6MTYwMTQwMjk5MH0.big763H97ieu2xBaaQdn1hsF_LJxc62E6MKMgSVdSEQ"
-    );
+    const [userToken, setUserToken] = useState("");
     const changeUserToken = (newToken: string): void => {
-        console.log(newToken);
         setUserToken(newToken);
     };
     return (
