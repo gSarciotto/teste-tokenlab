@@ -54,6 +54,7 @@ const validateForm = (values: Values): Partial<Values> => {
 export interface NewEventContainerProps {
     token: string;
     updateAuthenticatedUser: (token: string) => void;
+    updateEvents: () => void;
 }
 
 const useStyles = makeStyles({
@@ -113,7 +114,14 @@ export function NewEventContainer(props: NewEventContainerProps): JSX.Element {
                             description: values.description
                         })
                             .then((result) => {
-                                result.status
+                                if (result.status) {
+                                    setCreateEventAction({
+                                        status: "success",
+                                        message: result.message
+                                    });
+                                    props.updateEvents();
+                                }
+                                /*result.status
                                     ? setCreateEventAction({
                                           status: "success",
                                           message: result.message
@@ -121,7 +129,7 @@ export function NewEventContainer(props: NewEventContainerProps): JSX.Element {
                                     : setCreateEventAction({
                                           status: "error",
                                           message: result.message
-                                      });
+                                      });*/
                             })
                             .catch((err) => {
                                 console.log("Network error on event creation");
