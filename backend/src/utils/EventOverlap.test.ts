@@ -1,4 +1,4 @@
-import { doesEventOverlaps } from "./utils";
+import { doesEventOverlaps } from "./EventOverlap";
 import { Event } from "../sharedResources";
 
 describe("doesEventOverlaps should return false if", () => {
@@ -7,7 +7,8 @@ describe("doesEventOverlaps should return false if", () => {
     const existingEvent: Event = {
         creatorId: existingUserId,
         begin: new Date(),
-        end: new Date(Date.now() + eventLifetime)
+        end: new Date(Date.now() + eventLifetime),
+        description: ""
     };
     test("event ends before existingEvent beginning", () => {
         const newEventEnd = new Date(
@@ -16,7 +17,8 @@ describe("doesEventOverlaps should return false if", () => {
         const newEvent: Event = {
             creatorId: existingUserId,
             begin: new Date(newEventEnd.getTime() - eventLifetime),
-            end: newEventEnd
+            end: newEventEnd,
+            description: ""
         };
         expect(doesEventOverlaps(newEvent, [existingEvent])).toBe(false);
     });
@@ -27,7 +29,8 @@ describe("doesEventOverlaps should return false if", () => {
         const newEvent: Event = {
             creatorId: existingUserId,
             begin: newEventBegin,
-            end: new Date(newEventBegin.getTime() + eventLifetime)
+            end: new Date(newEventBegin.getTime() + eventLifetime),
+            description: ""
         };
         expect(doesEventOverlaps(newEvent, [existingEvent])).toBe(false);
     });
@@ -35,7 +38,8 @@ describe("doesEventOverlaps should return false if", () => {
         const newEvent: Event = {
             creatorId: existingUserId,
             begin: new Date(existingEvent.begin.getTime() - eventLifetime),
-            end: existingEvent.begin
+            end: existingEvent.begin,
+            description: ""
         };
         expect(doesEventOverlaps(newEvent, [existingEvent])).toBe(false);
     });
@@ -43,7 +47,8 @@ describe("doesEventOverlaps should return false if", () => {
         const newEvent: Event = {
             creatorId: existingUserId,
             begin: existingEvent.end,
-            end: new Date(existingEvent.end.getTime() + eventLifetime)
+            end: new Date(existingEvent.end.getTime() + eventLifetime),
+            description: ""
         };
         expect(doesEventOverlaps(newEvent, [existingEvent])).toBe(false);
     });
@@ -55,13 +60,15 @@ describe("doesEventOverlaps should return true if", () => {
     const existingEvent: Event = {
         creatorId: existingUserId,
         begin: new Date(),
-        end: new Date(Date.now() + eventLifetime)
+        end: new Date(Date.now() + eventLifetime),
+        description: ""
     };
     test("event ends when existingEvent has already started but not ended", () => {
         const newEvent: Event = {
             creatorId: existingUserId,
             begin: new Date(existingEvent.begin.getTime() - eventLifetime),
-            end: new Date(existingEvent.begin.getTime() + eventLifetime / 2)
+            end: new Date(existingEvent.begin.getTime() + eventLifetime / 2),
+            description: ""
         };
         expect(doesEventOverlaps(newEvent, [existingEvent])).toBe(true);
     });
@@ -69,7 +76,8 @@ describe("doesEventOverlaps should return true if", () => {
         const newEvent: Event = {
             creatorId: existingUserId,
             begin: new Date(existingEvent.begin.getTime() + eventLifetime / 2),
-            end: new Date(existingEvent.end.getTime() + eventLifetime)
+            end: new Date(existingEvent.end.getTime() + eventLifetime),
+            description: ""
         };
         expect(doesEventOverlaps(newEvent, [existingEvent])).toBe(true);
     });
@@ -77,7 +85,8 @@ describe("doesEventOverlaps should return true if", () => {
         const newEvent: Event = {
             creatorId: existingUserId,
             begin: new Date(existingEvent.begin.getTime() + 1),
-            end: new Date(existingEvent.end.getTime() - 1)
+            end: new Date(existingEvent.end.getTime() - 1),
+            description: ""
         };
         expect(doesEventOverlaps(newEvent, [existingEvent])).toBe(true);
     });

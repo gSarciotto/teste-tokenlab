@@ -6,7 +6,7 @@ import {
     IJwt
 } from "../utils";
 import { ICreateEventDatabase } from "./database/CreateEventDatabase";
-import { doesEventOverlaps } from "./utils";
+import { doesEventOverlaps } from "../utils";
 
 export type CreateEventBody = Pick<Event, "begin" | "end" | "description">;
 
